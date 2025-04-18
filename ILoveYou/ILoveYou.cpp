@@ -27,6 +27,10 @@ struct {
 
 
 
+
+//dfdfdfdsfsdfsfs
+
+
 int main()
 {
     room[0].name = "arasaka tower";
