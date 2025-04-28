@@ -51,8 +51,7 @@ int main(){
 
     player.location = 1;
 
-    string cmd;
-    int sz = player.items.size();
+    string cmd;    
     while (true) {
 
         std::cout << "your location " << room[player.location].name << "\n";
@@ -61,16 +60,16 @@ int main(){
         if (cmd == "go") {
 
             bool answer_is_correct = false;
+            int dir;
+            int sz = room[player.location].portal.size();
 
+           
             while (!answer_is_correct)
             {
-
-                int sz = room[player.location].portal.size();
                 for (int i = 0; i < sz; i++) {
                     cout << "type " << i << " to go " << room[room[player.location].portal[i]].name << "\n";
-                }
+                }             
 
-                int dir;
                 std::cin >> dir;
 
                 if (dir >= 0 && dir < sz) {
@@ -85,37 +84,40 @@ int main(){
         }
 
         if (cmd == "list") {
-            int sz = room[player.location].items.size();
-            if (sz == 0) {
+            if (room[player.location].items.empty()) {
                 cout << "There are no items here.\n";
-                continue;
             }
-            for (int i = 0; i < sz; i++) {
+            else {
+                for (int i = 0; i < room[player.location].items.size(); i++) {
 
-                cout << item_name[(int)room[player.location].items[i]] << "\n";
+                    cout << item_name[(int)room[player.location].items[i]] << "\n";
+                }
             }
         }
 
         if (cmd == "invent") {
            
-            if (sz == 0) {
-                cout << "There are no items here.\n";
-                continue;
+            if (player.items.empty()) {
+                cout << "There are no items here.\n";              
             }
-            for (int i = 0; i < sz; i++) {
-                cout << item_name[(int)player.items[i]] << "\n";
+            else {
+                for (int i = 0; i < player.items.size(); i++) {
+                    cout << item_name[(int)player.items[i]] << "\n";
+                }
             }
         }
 
 
         if (cmd == "pick") {
-            for (int i = 0; i < sz; i++) {
-                cout << item_name[(int)room[player.location].items[i]] << "\n";
-            }
-
             if (room[player.location].items.empty()) {
                 cout << "There are no items to pick up here.\n";
             }
+            else {
+                for (int i = 0; i < room[player.location].items.size(); i++) {
+                    cout << item_name[(int)room[player.location].items[i]] << "\n";
+                }
+            }
+            
             
             string item_to_pick;
             cin >> item_to_pick;
@@ -123,8 +125,8 @@ int main(){
             for (int i = 0; i < room[player.location].items.size(); i++) {
                 if (item_name[(int)room[player.location].items[i]] == item_to_pick) {
                     player.items.push_back(room[player.location].items[i]);
+                    cout << "You picked up " << item_name[(int)room[player.location].items[i]] << "\n";
                     room[player.location].items.erase(room[player.location].items.begin() + i);
-                    cout << "You picked up " << item_to_pick << "\n";
                 }
             }   
         }
