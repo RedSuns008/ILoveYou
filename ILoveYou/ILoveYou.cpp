@@ -25,7 +25,9 @@ struct {
 } player;
 
 
+struct {
 
+} portal;
 
 
 //dfdfdfdsfsdfsfs
