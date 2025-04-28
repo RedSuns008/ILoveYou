@@ -31,8 +31,7 @@ struct {
 //dfdfdfdsfsdfsfs
 
 
-int main()
-{
+int main(){
     room[0].name = "arasaka tower";
     room[0].portal.push_back(1);
 
@@ -53,6 +52,7 @@ int main()
     player.location = 1;
 
     string cmd;
+    int sz = player.items.size();
     while (true) {
 
         std::cout << "your location " << room[player.location].name << "\n";
@@ -80,54 +80,141 @@ int main()
                 else
                 {
                     cout << "incorrect input\n";
-
                 }
             }
         }
 
         if (cmd == "list") {
             int sz = room[player.location].items.size();
+            if (sz == 0) {
+                cout << "There are no items here.\n";
+                continue;
+            }
             for (int i = 0; i < sz; i++) {
+
                 cout << item_name[(int)room[player.location].items[i]] << "\n";
             }
         }
 
         if (cmd == "invent") {
-            int sz = player.items.size();
+           
+            if (sz == 0) {
+                cout << "There are no items here.\n";
+                continue;
+            }
             for (int i = 0; i < sz; i++) {
                 cout << item_name[(int)player.items[i]] << "\n";
             }
         }
 
-        //if (cmd == "d") {
-
-        //int sz = room[player.location].items.size();
-        /*for (int i = 0; i < sz; i++) {
-            cout << room[i].items << "\n";
-
-        }
-
-         }*/
-
-
-
 
         if (cmd == "pick") {
-            int sz = room[player.location].portal.size();
             for (int i = 0; i < sz; i++) {
-                cout << "type " << i << " to pick " << item_name[(int)room[player.location].items[i]] << "\n";
+                cout << item_name[(int)room[player.location].items[i]] << "\n";
             }
 
-            std::cin >> cmd;
+            if (room[player.location].items.empty()) {
+                cout << "There are no items to pick up here.\n";
+            }
+            
+            string item_to_pick;
+            cin >> item_to_pick;
 
-            pick_by_name(cmd);//ffegegrrrg
-            cout << "done";
-            //player.items.emplace_back(room[player.location].items[i]);
-            //player.items.push_back(item::);
-            //room[player.location].items.erase(room[player.location].items.begin() + i);
-
-
+            for (int i = 0; i < room[player.location].items.size(); i++) {
+                if (item_name[(int)room[player.location].items[i]] == item_to_pick) {
+                    player.items.push_back(room[player.location].items[i]);
+                    room[player.location].items.erase(room[player.location].items.begin() + i);
+                    cout << "You picked up " << item_to_pick << "\n";
+                }
+            }   
         }
-
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*if (cmd == "pick") {
+    int sz = room[player.location].portal.size();
+    for (int i = 0; i < sz; i++) {
+        cout << "type "     << " to pick " << item_name[(int)room[player.location].items[i]] << "\n";
+    }
+
+    std::cin >> cmd;
+    if (cmd == )
+
+
+}*/
+
+/*if (cmd == "pick") {
+    int sz = room[player.location].items.size();
+    if (sz == 0) {
+        cout << "There are no items to pick up here.\n";
+        continue;
+    }
+    for (int i = 0; i < sz; i++) {
+        cout << "Type " << i << " to pick " << item_name[(int)room[player.location].items[i]] << "\n";
+    }
+
+    int item_index;
+    std::cin >> item_index;
+
+
+    if (item_index >= 0 && item_index < sz) {
+        player.items.push_back(room[player.location].items[item_index]);
+        room[player.location].items.erase(room[player.location].items.begin() + item_index);
+        cout << "You picked up " << item_name[(int)player.items.back()] << "\n";
+    }
+    else {
+        cout << "Incorrect input\n";
+    }
+}
+
+}*/
+
+/*if (cmd == "pick") {
+    if (room[player.location].items.empty()) {
+        cout << "There are no items to pick up here.\n";
+    }
+    else {
+        cout << "Available items to pick:\n";
+        for (auto& it : room[player.location].items) {
+            cout << "- " << item_name[(int)it] << "\n";
+        }
+
+        string item_to_pick;
+        cin >> item_to_pick;
+
+        for (int i = 0; i < room[player.location].items.size(); i++) {
+            if (item_name[(int)room[player.location].items[i]] == item_to_pick) {
+                player.items.push_back(room[player.location].items[i]);
+                room[player.location].items.erase(room[player.location].items.begin() + i);
+                cout << "You picked up " << item_to_pick << "\n";
+            }
+        }
+        cout << "Item not found.\n";
+    }
+}*/
