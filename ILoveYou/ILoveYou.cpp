@@ -11,10 +11,17 @@ enum class item {
 
 string item_name[] = { "gun","tommygun","cannon" };
 
+struct Portal {
+    string name;
+    int target;
+
+
+};
+
 class location {
 public:
     string name;
-    vector<int> portal;
+    vector <Portal> portal;
     vector<item> items;
 };
 
@@ -22,33 +29,29 @@ location room[4];
 struct {
     int location;
     vector<item> items;
+
 } player;
-
-
-struct {
-
-} portal;
 
 //
 //dfdfdfdsfsdfsfs
 
 
-int main(){
+int main() {
     room[0].name = "arasaka tower";
-    room[0].portal.push_back(1);
+    room[0].portal.push_back({ "Northside", 1 });
 
     room[1].name = "Northside";
-    room[1].portal.push_back(0);
-    room[1].portal.push_back(2);
+    room[1].portal.push_back({ "arasaka tower", 0 });
+    room[1].portal.push_back({ "Pacifika", 2 });
     room[1].items.push_back(item::cannon);
     room[1].items.push_back(item::gun);
 
     room[2].name = "Pacifika";
-    room[2].portal.push_back(1);
-    room[2].portal.push_back(3);
+    room[2].portal.push_back({ "Northside", 1 });
+    room[2].portal.push_back({ "Arrays", 3 });
 
     room[3].name = "Arrays";
-    room[3].portal.push_back(2);
+    room[3].portal.push_back({"Pacifika", 2});
 
 
     player.location = 1;
@@ -69,13 +72,13 @@ int main(){
             while (!answer_is_correct)
             {
                 for (int i = 0; i < sz; i++) {
-                    cout << "type " << i << " to go " << room[room[player.location].portal[i]].name << "\n";
+                    cout << "type " << i << " to go " << room[player.location].portal[i].name << "\n";
                 }             
 
                 std::cin >> dir;
 
                 if (dir >= 0 && dir < sz) {
-                    player.location = room[player.location].portal[dir];
+                    player.location = room[player.location].portal[dir].target;
                     answer_is_correct = true;
                 }
                 else
