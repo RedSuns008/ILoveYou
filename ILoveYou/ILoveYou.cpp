@@ -1,4 +1,4 @@
-
+﻿
 #include <iostream>
 #include <string>
 #include <vector>
@@ -6,15 +6,16 @@
 using namespace std;
 
 enum class item {
-    gun, tommygun, cannon
+    gun, tommygun, cannon, ar_glasses, tth
 };
 
-string item_name[] = { "gun","tommygun","cannon" };
+string item_name[] = { "gun","tommygun","cannon","ar_glasses", "tth"};
 
 struct Portal {
     string name;
     int target;
-
+    bool activiti_flag;
+    bool visiblity_flag;
 
 };
 
@@ -29,29 +30,31 @@ location room[4];
 struct {
     int location;
     vector<item> items;
-
+    int health;
 } player;
-
-//
-//dfdfdfdsfsdfsfs
 
 
 int main() {
-    room[0].name = "arasaka tower";
-    room[0].portal.push_back({ "Northside", 1 });
+    room[0].name = "Corp. alley";
+    room[0].portal.push_back({ "Northside", 1, false, false });
 
     room[1].name = "Northside";
-    room[1].portal.push_back({ "arasaka tower", 0 });
-    room[1].portal.push_back({ "Pacifika", 2 });
+    room[1].portal.push_back({ "Corp. alley", 0, false, false });
+    room[1].portal.push_back({ "Pacifika", 2, true, true });
+    room[1].portal.push_back({ "Arrays", 3, true, true });
     room[1].items.push_back(item::cannon);
-    room[1].items.push_back(item::gun);
+    room[1].items.push_back(item::gun); 
+    room[1].items.push_back(item::ar_glasses);
+    room[1].items.push_back(item::tth);
+
+
 
     room[2].name = "Pacifika";
-    room[2].portal.push_back({ "Northside", 1 });
-    room[2].portal.push_back({ "Arrays", 3 });
+    room[2].portal.push_back({ "Northside", 1, true, false });
+    room[2].portal.push_back({ "Arrays", 3, true, false });
 
     room[3].name = "Arrays";
-    room[3].portal.push_back({ "Pacifika", 2 });
+    room[3].portal.push_back({ "Pacifika", 2, false, false });
 
 
     player.location = 1;
@@ -69,23 +72,63 @@ int main() {
             int sz = room[player.location].portal.size();
 
 
-            while (!answer_is_correct)
-            {
+            /*while (!answer_is_correct)
+            {*/
                 for (int i = 0; i < sz; i++) {
-                    cout << "type " << i << " to go " << room[player.location].portal[i].name << "\n";
+                    if (room[player.location].portal[i].visiblity_flag) {
+                    cout << "type " << i << " to go " << room[player.location].portal[i].name << "\t" << (room[player.location].portal[i].activiti_flag ? "unlocked\n" : "locked\n");
+                    }
                 }
 
                 std::cin >> dir;
-
+                    
                 if (dir >= 0 && dir < sz) {
                     player.location = room[player.location].portal[dir].target;
                     answer_is_correct = true;
                 }
                 else
                 {
-                    cout << "incorrect input\n";
+                    cout << "incorrect input \n";
+                    /*cin.ignore(10000, '\n');
+                    cin.clear();*/
+                    break;
+                }
+            //}
+
+        }
+        if (cmd == "use") {
+
+            
+
+            string item_to_use;
+            cin >> item_to_use;
+
+            if (item_to_use == "tth") {
+                int sz = room[player.location].portal.size(); // исправить сз, не то берет для расчета полюбому!
+
+                for (int i = 0; i < room[player.location].portal.size(); i++) {
+
+                    if (room[player.location].portal[i].name == "Corp. alley") {
+
+                        room[player.location].portal[i].activiti_flag = true;
+                        cout << " You have access to: " << room[player.location].portal[i].name << "\n";
+                    }
                 }
             }
+
+
+
+
+            if (item_to_use == "ar_glasses") {
+
+                int sz = room[player.location].portal.size(); // исправить сз, не то берет для расчета полюбому!
+
+                for (int i = 0; i < sz; i++) {
+                    room[player.location].portal[i].visiblity_flag = true;
+                    cout << " Looks like appears new door(s)" << "\n";
+                }
+            }
+
         }
 
         if (cmd == "list") {
