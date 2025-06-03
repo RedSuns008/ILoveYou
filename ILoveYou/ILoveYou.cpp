@@ -3,8 +3,9 @@
 #include <string>
 #include <vector>
 #include <time.h>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
-
 enum class item {
     gun, tommygun, cannon, ar_glasses, tth
 };
@@ -27,14 +28,62 @@ public:
 };
 
 location room[4];
+
+
 struct {
     int location;
     vector<item> items;
-    int health;
+    int health = 150;
+    int attack;
 } player;
 
+ 
+
+struct {
+    int location;
+    vector<item> items;
+    int health = 100;
+    int damage;
+    string name;
+} enemy;
+
+
+void attack_enemy() {
+    srand(time(0));
+    enemy.damage = rand() % 50;
+    player.attack = 15 + rand() % 50;
+
+    if (player.health > 0 && enemy.health > 0) {
+
+        cout << enemy.health << " <-enemy, player -> " << player.health << "\n";
+
+        enemy.health = enemy.health - player.attack;
+        cout <<    "You attacked : " << "'" << enemy.name << "'" << " with " << player.attack << " damage" << "\n";
+        player.health = player.health - enemy.damage;
+        cout << "You takes: " << enemy.damage << " damage" << "\n";
+    }
+    else
+    {
+        if (enemy.health <= 0) {
+            cout << "You killed: " << enemy.name << "\n";
+        }
+        else {
+            cout << " You Died " << "\n";
+
+        }
+
+
+    }
+
+
+}
 
 int main() {
+    srand(time(NULL));
+
+    
+    enemy.name = "Cyberpsycho Rei";
+
     room[0].name = "Corp. alley";
     room[0].portal.push_back({ "Northside", 1, false, false });
 
@@ -46,7 +95,6 @@ int main() {
     room[1].items.push_back(item::gun); 
     room[1].items.push_back(item::ar_glasses);
     room[1].items.push_back(item::tth);
-
 
 
     room[2].name = "Pacifika";
@@ -128,8 +176,35 @@ int main() {
                     cout << " Looks like appears new door(s)" << "\n";
                 }
             }
-
+            if (item_to_use == "gun") {
+                cout << enemy.damage << "\n";
+                attack_enemy();
+            }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         if (cmd == "list") {
             if (room[player.location].items.empty()) {
