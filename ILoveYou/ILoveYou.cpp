@@ -19,12 +19,20 @@ struct Portal {
     bool visiblity_flag;
 
 };
+struct  Enemy {
+    string name;
+    vector<item> items;
+    int health = 100;
+    int damage;
+    
+};
 
 class location {
 public:
     string name;
     vector <Portal> portal;
     vector<item> items;
+    vector<Enemy> enemy;
 };
 
 location room[4];
@@ -39,51 +47,46 @@ struct {
 
  
 
-struct {
-    int location;
-    vector<item> items;
-    int health = 100;
-    int damage;
-    string name;
-} enemy;
+
 
 
 void attack_enemy() {
     srand(time(0));
-    enemy.damage = rand() % 50;
     player.attack = 15 + rand() % 50;
+    for (int i = 0; i < room[player.location].enemy.size(); i++) {
 
-    if (player.health > 0 && enemy.health > 0 ) {
+        room[player.location].enemy[i].damage = rand() % 50;
 
-        cout << enemy.health << " <-enemy, player -> " << player.health << "\n";
+        if (player.health > 0 && room[player.location].enemy[i].health > 0) {
 
-        enemy.health = enemy.health - player.attack;
-        cout <<    "You attacked : " << "'" << enemy.name << "'" << " with " << player.attack << " damage" << "\n";
-        player.health = player.health - enemy.damage;
-        cout << "You takes: " << enemy.damage << " damage" << "\n";
-    }
-    else
-    {
-        if (enemy.health <= 0) {
-            cout << "You killed: " << enemy.name << "\n";
+            cout << room[player.location].enemy[i].health << " <-enemy, player -> " << player.health << "\n";
+
+            room[player.location].enemy[i].health -= player.attack;
+            cout << "You attacked : " << "'" << room[player.location].enemy[i].name << "'" << " with " << player.attack << " damage" << "\n";
+            player.health -= room[player.location].enemy[i].damage;
+            cout << "You takes: " << room[player.location].enemy[i].damage << " damage" << "\n";
         }
-        else {
-            cout << " You Died " << "\n";
+        else
+        {
+            if (room[player.location].enemy[i].health <= 0) {
+                cout << "You killed: " << room[player.location].enemy[i].name << "\n";
+            }
+            else {
+                cout << " You Died " << "\n";
+                exit;
+            }
+
 
         }
 
-
     }
-
 
 }
 
 int main() {
     srand(time(NULL));
 
-
-    enemy.name = "Cyberpsycho Rei";
-
+   
     room[0].name = "Corp. alley";
     room[0].portal.push_back({ "Northside", 1, false, false });
 
@@ -91,10 +94,13 @@ int main() {
     room[1].portal.push_back({ "Corp. alley", 0, false, false });
     room[1].portal.push_back({ "Pacifika", 2, true, true });
     room[1].portal.push_back({ "Arrays", 3, true, true });
+    room[1].enemy.push_back({"Cyberpsycho"});
     room[1].items.push_back(item::gun);
     room[1].items.push_back(item::ar_glasses);
     room[1].items.push_back(item::tth);
     room[1].items.push_back(item::jacket);
+  
+    
 
     room[2].name = "Pacifika";
     room[2].portal.push_back({ "Northside", 1, true, false });
