@@ -21,6 +21,7 @@ struct Portal {
 };
 struct  Enemy {
     string name;
+    bool alive_flag;
     vector<item> items;
     int health = 100;
     int damage;
@@ -57,7 +58,7 @@ void attack_enemy() {
 
         room[player.location].enemy[i].damage = rand() % 50;
 
-        if (player.health > 0 && room[player.location].enemy[i].health > 0) {
+        if (room[player.location].enemy[i].alive_flag && player.health > 0 && room[player.location].enemy[i].health > 0) {
 
             cout << room[player.location].enemy[i].health << " <-enemy, player -> " << player.health << "\n";
 
@@ -68,8 +69,9 @@ void attack_enemy() {
         }
         else
         {
-            if (room[player.location].enemy[i].health <= 0) {
-                cout << "You killed: " << room[player.location].enemy[i].name << "\n";
+            if (room[player.location].enemy[i].alive_flag && room[player.location].enemy[i].health <= 0) {
+                room[player.location].enemy[i].alive_flag = false;
+                cout << "You killed: " << room[player.location].enemy[i].name  << "\n";
             }
             else {
                 cout << " You Died " << "\n";
@@ -94,7 +96,7 @@ int main() {
     room[1].portal.push_back({ "Corp. alley", 0, false, false });
     room[1].portal.push_back({ "Pacifika", 2, true, true });
     room[1].portal.push_back({ "Arrays", 3, true, true });
-    room[1].enemy.push_back({"Cyberpsycho"});
+    room[1].enemy.push_back({"Cyberpsycho", true});
     room[1].items.push_back(item::gun);
     room[1].items.push_back(item::ar_glasses);
     room[1].items.push_back(item::tth);
