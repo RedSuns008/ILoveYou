@@ -41,6 +41,7 @@ location room[4];
 
 struct {
     int location;
+    bool alive_flag = true;
     vector<item> items;
     int health = 150;
     int attack;
@@ -73,9 +74,13 @@ void attack_enemy() {
                 room[player.location].enemy[i].alive_flag = false;
                 cout << "You killed: " << room[player.location].enemy[i].name  << "\n";
             }
-            else {
+            else if (room[player.location].enemy[i].alive_flag && player.health <=0) {
                 cout << " You Died " << "\n";
+                player.alive_flag = false;
                 exit;
+            }
+            else {
+                cout << "No enemies around" << "\n";
             }
 
 
@@ -115,7 +120,7 @@ int main() {
     player.location = 1;
 
     string cmd;
-    while (true) {
+    while (player.alive_flag) {
 
         std::cout << "your location " << room[player.location].name << "\n";
         std::cin >> cmd;
@@ -123,33 +128,32 @@ int main() {
         if (cmd == "go") {
 
             bool answer_is_correct = false;
-            int dir;
+            string loc_to_go;
             int sz = room[player.location].portal.size();
 
 
             while (!answer_is_correct)
             {
+                
                 for (int i = 0; i < sz; i++) {
                     if (room[player.location].portal[i].visiblity_flag) {
                         cout << "type " << i << " to go " << room[player.location].portal[i].name << "\t" << (room[player.location].portal[i].activiti_flag ? "unlocked\n" : "locked\n");
+                        exit;
                     }
                 }
 
-                std::cin >> dir;
+                std::cin >> loc_to_go;
+                for (int i = 0; i < sz; i++) {
+                    if (room[player.location].portal[i].name == loc_to_go) {
+                        player.location = room[player.location].portal[i].target;
+                        answer_is_correct = true;
 
-                if (dir >= 0 && dir < sz) {
-                    player.location = room[player.location].portal[dir].target;
-                    answer_is_correct = true;
-                }
-                else
-                {
-                    cout << "incorrect input \n";
-                    /*cin.ignore(10000, '\n');
-                    cin.clear();*/
-                    break;
+                        break;
+                    }
                 }
             }
 
+                
         }
         if (cmd == "use") {
 
@@ -189,7 +193,7 @@ int main() {
 
                     if (item_to_use == "jacket") {
                         player.health += 100;
-                        cout << "Your health has been increased." << "\n";
+                       cout << "Your health has been increased." << "\n";
                     }
 
                     if (item_to_use == "gun") {
@@ -201,98 +205,77 @@ int main() {
             }
         }
 
+       if (cmd == "list") {
+           if (room[player.location].items.empty()) {
+               cout << "There are no items here.\n";
+           }
+           else {
+               for (int i = 0; i < room[player.location].items.size(); i++) {
+    
+                   cout << item_name[(int)room[player.location].items[i]] << "\n";
+               }
+           }
+       }
+    
+       if (cmd == "invent") {
+    
+           if (player.items.empty()) {
+               cout << "There are no items here.\n";
+           }
+           else {
+               for (int i = 0; i < player.items.size(); i++) {
+                   cout << item_name[(int)player.items[i]] << "\n";
+               }
+           }
+       }
+       if (cmd == "drop") {
+           if (player.items.empty()) {
+               cout << "There are no items to pick up here.\n";
+           }
+           else {
+               for (int i = 0; i < player.items.size(); i++) {
+                   cout << item_name[(int)player.items[i]] << "\n";
+               }
+           }
 
+           string item_to_drop;
+           cin >> item_to_drop;
 
+           for (int i = 0; i < player.items.size(); i++) {
+               if (item_name[(int)player.items[i]] == item_to_drop) {
+                   room[player.location].items.push_back(player.items[i]);
+                   cout << "You drop out " << item_name[(int)player.items[i]] << "\n";
+                   player.items.erase(player.items.begin() + i);
+               }
+           }
+       }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            if (cmd == "list") {
-                if (room[player.location].items.empty()) {
-                    cout << "There are no items here.\n";
-                }
-                else {
-                    for (int i = 0; i < room[player.location].items.size(); i++) {
-
-                        cout << item_name[(int)room[player.location].items[i]] << "\n";
-                    }
-                }
+        if (cmd == "pick") {
+            if (room[player.location].items.empty()) {
+                cout << "There are no items to pick up here.\n";
             }
-
-            if (cmd == "invent") {
-
-                if (player.items.empty()) {
-                    cout << "There are no items here.\n";
-                }
-                else {
-                    for (int i = 0; i < player.items.size(); i++) {
-                        cout << item_name[(int)player.items[i]] << "\n";
-                    }
-                }
-            }
-            if (cmd == "drop") {
-                if (player.items.empty()) {
-                    cout << "There are no items to pick up here.\n";
-                }
-                else {
-                    for (int i = 0; i < player.items.size(); i++) {
-                        cout << item_name[(int)player.items[i]] << "\n";
-                    }
-                }
-
-                string item_to_drop;
-                cin >> item_to_drop;
-
-                for (int i = 0; i < player.items.size(); i++) {
-                    if (item_name[(int)player.items[i]] == item_to_drop) {
-                        room[player.location].items.push_back(player.items[i]);
-                        cout << "You drop out " << item_name[(int)player.items[i]] << "\n";
-                        player.items.erase(player.items.begin() + i);
-                    }
-                }
-            }
-
-            if (cmd == "pick") {
-                if (room[player.location].items.empty()) {
-                    cout << "There are no items to pick up here.\n";
-                }
-                else {
-                    for (int i = 0; i < room[player.location].items.size(); i++) {
-                        cout << item_name[(int)room[player.location].items[i]] << "\n";
-                    }
-                }
-                string item_to_pick;
-                cin >> item_to_pick;
-
+            else {
                 for (int i = 0; i < room[player.location].items.size(); i++) {
-                    if (item_name[(int)room[player.location].items[i]] == item_to_pick) {
-                        player.items.push_back(room[player.location].items[i]);
-                        cout << "You picked up " << item_name[(int)room[player.location].items[i]] << "\n";
-                        room[player.location].items.erase(room[player.location].items.begin() + i);
-                    }
+                    cout << item_name[(int)room[player.location].items[i]] << "\n";
                 }
-
-
             }
-            if (cmd == "exit") {
-                break;
+            string item_to_pick;
+            cin >> item_to_pick;
+   
+            for (int i = 0; i < room[player.location].items.size(); i++) {
+                if (item_name[(int)room[player.location].items[i]] == item_to_pick) {
+                    player.items.push_back(room[player.location].items[i]);
+                    cout << "You picked up " << item_name[(int)room[player.location].items[i]] << "\n";
+                    room[player.location].items.erase(room[player.location].items.begin() + i);
+                }
             }
+   
+   
         }
+        if (cmd == "exit") {
+            break;
+        }
+    }
 
 }
 
