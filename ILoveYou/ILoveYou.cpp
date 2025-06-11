@@ -55,39 +55,44 @@ struct {
 void attack_enemy() {
     srand(time(0));
     player.attack = 15 + rand() % 50;
-    for (int i = 0; i < room[player.location].enemy.size(); i++) {
+    if (!room[player.location].enemy.empty()) {
+        for (int i = 0; i < room[player.location].enemy.size(); i++) {
 
-        room[player.location].enemy[i].damage = rand() % 50;
+            room[player.location].enemy[i].damage = rand() % 50;
 
-        if (room[player.location].enemy[i].alive_flag && player.health > 0 && room[player.location].enemy[i].health > 0) {
+            if (room[player.location].enemy[i].alive_flag && player.health > 0 && room[player.location].enemy[i].health > 0) {
 
-            cout << room[player.location].enemy[i].health << " <-enemy, player -> " << player.health << "\n";
+                cout << room[player.location].enemy[i].health << " <-enemy, player -> " << player.health << "\n";
 
-            room[player.location].enemy[i].health -= player.attack;
-            cout << "You attacked : " << "'" << room[player.location].enemy[i].name << "'" << " with " << player.attack << " damage" << "\n";
-            player.health -= room[player.location].enemy[i].damage;
-            cout << "You takes: " << room[player.location].enemy[i].damage << " damage" << "\n";
-        }
-        else
-        {
-            if (room[player.location].enemy[i].alive_flag && room[player.location].enemy[i].health <= 0) {
-                room[player.location].enemy[i].alive_flag = false;
-                cout << "You killed: " << room[player.location].enemy[i].name  << "\n";
+                room[player.location].enemy[i].health -= player.attack;
+                cout << "You attacked : " << "'" << room[player.location].enemy[i].name << "'" << " with " << player.attack << " damage" << "\n";
+                player.health -= room[player.location].enemy[i].damage;
+                cout << "You takes: " << room[player.location].enemy[i].damage << " damage" << "\n";
             }
-            else if (room[player.location].enemy[i].alive_flag && player.health <=0) {
-                cout << " You Died " << "\n";
-                player.alive_flag = false;
-                exit;
+            else
+            {
+                if (room[player.location].enemy[i].alive_flag && room[player.location].enemy[i].health <= 0) {
+                    room[player.location].enemy[i].alive_flag = false;
+                    cout << "You killed: " << room[player.location].enemy[i].name << "\n";
+                }
+                else if (room[player.location].enemy[i].alive_flag && player.health <= 0) {
+                    cout << " You Died " << "\n";
+                    player.alive_flag = false;
+                    exit;
+                }
+                else {
+                    cout << "No enemies around" << "\n";
+                }
             }
-            else {
-                cout << "No enemies around" << "\n";
-            }
-
-
         }
 
     }
+    
+    else {
+        cout << "No enemies around" << "\n";
 
+
+    }
 }
 
 int main() {
@@ -177,8 +182,6 @@ int main() {
                             }
                         }
                     }
-
-
 
 
                     if (item_to_use == "ar_glasses") {
