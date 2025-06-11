@@ -88,6 +88,9 @@ void attack_enemy() {
              cout << "No enemies around" << "\n";
          }
 
+
+
+
     }
 
 }
