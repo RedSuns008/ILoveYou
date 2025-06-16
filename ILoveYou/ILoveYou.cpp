@@ -56,6 +56,7 @@ void attack_enemy() {
     srand(time(0));
     player.attack = 15 + rand() % 50;
     if (!room[player.location].enemy.empty()) {
+
         for (int i = 0; i < room[player.location].enemy.size(); i++) {
 
             room[player.location].enemy[i].damage = rand() % 50;
@@ -72,26 +73,27 @@ void attack_enemy() {
             else
             {
                 if (room[player.location].enemy[i].alive_flag && room[player.location].enemy[i].health <= 0) {
-                    room[player.location].enemy[i].alive_flag = false;
                     cout << "You killed: " << room[player.location].enemy[i].name << "\n";
+                    cout << room[player.location].enemy[i].name <<" drop out " << item_name[(int)room[player.location].enemy[i].items[i]] << "\n";
+                    room[player.location].items.push_back(room[player.location].enemy[i].items[i]);
+                    room[player.location].enemy[i].items.erase(room[player.location].enemy[i].items.begin() + i);
+                    room[player.location].enemy[i].alive_flag = false;
+                    room[player.location].enemy.erase(room[player.location].enemy.begin() + i);
                 }
                 else if (room[player.location].enemy[i].alive_flag && player.health <= 0) {
                     cout << " You Died " << "\n";
                     player.alive_flag = false;
                     exit;
                 }
-                else {
-                    cout << "No enemies around" << "\n";
-                }
+                
             }
         }
 
     }
     
     else {
-        cout << "No enemies around" << "\n";
-
-
+        cout << "No enemies around" << "\n"; 
+        exit;
     }
 }
 
@@ -107,9 +109,10 @@ int main() {
     room[1].portal.push_back({ "Pacifika", 2, true, true });
     room[1].portal.push_back({ "Arrays", 3, true, true });
     room[1].enemy.push_back({"Cyberpsycho", true});
+    room[1].enemy[0].items.push_back(item::tth);
     room[1].items.push_back(item::gun);
     room[1].items.push_back(item::ar_glasses);
-    room[1].items.push_back(item::tth);
+    
     room[1].items.push_back(item::jacket);
   
     
@@ -117,6 +120,9 @@ int main() {
     room[2].name = "Pacifika";
     room[2].portal.push_back({ "Northside", 1, true, false });
     room[2].portal.push_back({ "Arrays", 3, true, false });
+    room[2].enemy.push_back({ "Cyberpsycho", true });
+    room[2].enemy[0].items.push_back(item::tth);
+
 
     room[3].name = "Arrays";
     room[3].portal.push_back({ "Pacifika", 2, false, false });
@@ -142,18 +148,28 @@ int main() {
                 
                 for (int i = 0; i < sz; i++) {
                     if (room[player.location].portal[i].visiblity_flag) {
-                        cout << "type " << i << " to go " << room[player.location].portal[i].name << "\t" << (room[player.location].portal[i].activiti_flag ? "unlocked\n" : "locked\n");
+                        cout << "type Location name to go"  << room[player.location].portal[i].name << "\t" << (room[player.location].portal[i].activiti_flag ? "unlocked\n" : "locked\n");
                         exit;
                     }
-                }
+;               }
 
+                cout << "else type Exit " << "\n";
                 std::cin >> loc_to_go;
-                for (int i = 0; i < sz; i++) {
-                    if (room[player.location].portal[i].name == loc_to_go) {
-                        player.location = room[player.location].portal[i].target;
-                        answer_is_correct = true;
+                if (loc_to_go == "Exit") {
 
-                        break;
+                    answer_is_correct = true;
+                    exit;
+                }
+                else {
+
+                    for (int i = 0; i < sz; i++) {
+                        if (room[player.location].portal[i].name == loc_to_go) {
+                            player.location = room[player.location].portal[i].target;
+                            answer_is_correct = true;
+
+                            break;
+                        }
+
                     }
                 }
             }
@@ -171,16 +187,10 @@ int main() {
                 if (item_name[(int)player.items[i]] == item_to_use) {
 
                     if (item_to_use == "tth") {
-                        int sz = room[player.location].portal.size(); // исправить сз, не то берет для расчета полюбому!
 
-                        for (int i = 0; i < room[player.location].portal.size(); i++) {
-
-                            if (room[player.location].portal[i].name == "Corp. alley") {
-
-                                room[player.location].portal[i].activiti_flag = true;
-                                cout << " You have access to: " << room[player.location].portal[i].name << "\n";
-                            }
-                        }
+                                room[player.location].portal[0].activiti_flag = true;
+                                cout << " You have access to: " << room[player.location].portal[0].name << "\n";
+                            
                     }
 
 
