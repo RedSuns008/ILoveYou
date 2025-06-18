@@ -19,14 +19,25 @@ struct Portal {
     bool visiblity_flag;
 
 };
-struct  Enemy {
-    string name;
-    bool alive_flag;
+
+class Player {
+public:
+    int location;
+    bool alive_flag = true;
     vector<item> items;
-    int health = 100;
-    int damage;
-    
+    int health = 150;
+    int attack;
 };
+
+Player player;
+
+class  Enemy : public Player {
+public:
+    string name;
+    int damage;
+};
+
+Enemy enemy;
 
 class location {
 public:
@@ -38,18 +49,35 @@ public:
 
 location room[4];
 
+void Locationload(){
 
-struct {
-    int location;
-    bool alive_flag = true;
-    vector<item> items;
-    int health = 150;
-    int attack;
-} player;
+    room[0].name = "Corp. alley";
+    room[0].portal.push_back({ "Northside", 1, false, false });
 
- 
+    room[1].name = "Northside";
+    room[1].portal.push_back({ "Corp. alley", 0, false, false });
+    room[1].portal.push_back({ "Pacifika", 2, true, true });
+    room[1].portal.push_back({ "Arrays", 3, true, true });
+    room[1].enemy.push_back({ "Cyberpsycho", 1});
+    room[1].enemy[0].items.push_back(item::tth);
+    room[1].items.push_back(item::gun);
+    room[1].items.push_back(item::ar_glasses);
+
+    room[1].items.push_back(item::jacket);
 
 
+
+    room[2].name = "Pacifika";
+    room[2].portal.push_back({ "Northside", 1, true, false });
+    room[2].portal.push_back({ "Arrays", 3, true, false });
+    room[2].enemy.push_back({ "Cyberpsycho", true });
+    room[2].enemy[0].items.push_back(item::tth);
+
+    room[3].name = "Arrays";
+    room[3].portal.push_back({ "Pacifika", 2, false, false });
+    room[3].enemy.push_back({ "Cyberpsycho", false });
+
+}
 
 
 void attack_enemy() {
@@ -98,205 +126,354 @@ void attack_enemy() {
     }
 }
 
+
+
+void Motion(string cmd) {
+
+    if (cmd == "go") {
+
+        bool answer_is_correct = false;
+        string loc_to_go;
+        int sz = room[player.location].portal.size();
+
+
+        while (!answer_is_correct)
+        {
+
+            for (int i = 0; i < sz; i++) {
+                if (room[player.location].portal[i].visiblity_flag) {
+                    cout << "type Location name to go " << room[player.location].portal[i].name << "\t" << (room[player.location].portal[i].activiti_flag ? "unlocked\n" : "locked\n");
+                    exit;
+                }
+            }
+
+            cout << "else type Exit " << "\n";
+            std::cin >> loc_to_go;
+            if (loc_to_go == "Exit") {
+
+                answer_is_correct = true;
+                exit;
+            }
+            else {
+
+                for (int i = 0; i < sz; i++) {
+                    if (room[player.location].portal[i].name == loc_to_go) {
+                        player.location = room[player.location].portal[i].target;
+                        answer_is_correct = true;
+
+                        break;
+                    }
+
+                }
+            }
+        }
+
+    }
+}
+void Using(string cmd) {
+    if (cmd == "use") {
+
+        string item_to_use;
+        cin >> item_to_use;
+
+        for (int i = 0; i < player.items.size(); i++) {
+            if (item_name[(int)player.items[i]] == item_to_use) {
+
+                if (item_to_use == "tth") {
+
+                    room[player.location].portal[0].activiti_flag = true;
+                    cout << " You have access to: " << room[player.location].portal[0].name << "\n";
+
+                }
+
+
+                if (item_to_use == "ar_glasses") {
+
+                    int sz = room[player.location].portal.size(); // исправить сз, не то берет для расчета полюбому!
+                    for (int i = 0; i < sz; i++) {
+                        if (!room[player.location].portal[i].visiblity_flag) {
+                            room[player.location].portal[i].visiblity_flag = true;
+                            cout << " Looks like appears new door(s)" << "\n";
+                        }
+                    }
+                }
+
+                if (item_to_use == "jacket") {
+                    player.health += 100;
+                    cout << "Your health has been increased." << "\n";
+                }
+
+                if (item_to_use == "gun") {
+                    attack_enemy();
+
+                }
+            }
+
+        }
+    }
+}
+
+
+void Search(string cmd) {
+    if (cmd == "list") {
+        if (room[player.location].items.empty()) {
+            cout << "There are no items here.\n";
+        }
+        else {
+            for (int i = 0; i < room[player.location].items.size(); i++) {
+                cout << item_name[(int)room[player.location].items[i]] << "\n";
+            }
+        }
+    }
+}
+
+
+void Inventory(string cmd) {
+    if (cmd == "invent") {
+
+        if (player.items.empty()) {
+            cout << "There are no items here.\n";
+        }
+        else {
+            for (int i = 0; i < player.items.size(); i++) {
+                cout << item_name[(int)player.items[i]] << "\n";
+            }
+        }
+    }
+}
+
+void Droping(string cmd) {
+    if (cmd == "drop") {
+        if (player.items.empty()) {
+            cout << "There are no items to pick up here.\n";
+        }
+        else {
+            for (int i = 0; i < player.items.size(); i++) {
+                cout << item_name[(int)player.items[i]] << "\n";
+            }
+        }
+
+        string item_to_drop;
+        cin >> item_to_drop;
+
+        for (int i = 0; i < player.items.size(); i++) {
+            if (item_name[(int)player.items[i]] == item_to_drop) {
+                room[player.location].items.push_back(player.items[i]);
+                cout << "You drop out " << item_name[(int)player.items[i]] << "\n";
+                player.items.erase(player.items.begin() + i);
+            }
+        }
+    }
+}
+
+void Picking(string cmd) {
+    if (cmd == "pick") {
+        if (room[player.location].items.empty()) {
+            cout << "There are no items to pick up here.\n";
+        }
+        else {
+            for (int i = 0; i < room[player.location].items.size(); i++) {
+                cout << item_name[(int)room[player.location].items[i]] << "\n";
+            }
+        }
+        string item_to_pick;
+        cin >> item_to_pick;
+
+        for (int i = 0; i < room[player.location].items.size(); i++) {
+            if (item_name[(int)room[player.location].items[i]] == item_to_pick) {
+                player.items.push_back(room[player.location].items[i]);
+                cout << "You picked up " << item_name[(int)room[player.location].items[i]] << "\n";
+                room[player.location].items.erase(room[player.location].items.begin() + i);
+            }
+        }
+
+
+    }
+}
+
+void MainGame(string cmd) {
+   
+    std::cout << "your location " << room[player.location].name << "\n";
+    std::cin >> cmd;
+
+    Motion(cmd);
+
+    Using(cmd);
+
+    Search(cmd);
+
+    Inventory(cmd);
+
+    Picking(cmd);
+
+    Droping(cmd);
+
+}
+
+
 int main() {
     srand(time(NULL));
-
-   
-    room[0].name = "Corp. alley";
-    room[0].portal.push_back({ "Northside", 1, false, false });
-
-    room[1].name = "Northside";
-    room[1].portal.push_back({ "Corp. alley", 0, false, false });
-    room[1].portal.push_back({ "Pacifika", 2, true, true });
-    room[1].portal.push_back({ "Arrays", 3, true, true });
-    room[1].enemy.push_back({"Cyberpsycho", true});
-    room[1].enemy[0].items.push_back(item::tth);
-    room[1].items.push_back(item::gun);
-    room[1].items.push_back(item::ar_glasses);
-    
-    room[1].items.push_back(item::jacket);
+    Locationload();
   
-    
-
-    room[2].name = "Pacifika";
-    room[2].portal.push_back({ "Northside", 1, true, false });
-    room[2].portal.push_back({ "Arrays", 3, true, false });
-    room[2].enemy.push_back({ "Cyberpsycho", true });
-    room[2].enemy[0].items.push_back(item::tth);
-
-
-    room[3].name = "Arrays";
-    room[3].portal.push_back({ "Pacifika", 2, false, false });
-    //room[3].enemy.push_back({ "Cyberpsycho", false });
-
     player.location = 1;
     player.items.push_back(item::ar_glasses);
     player.items.push_back(item::gun);
 
     string cmd;
+
     while (player.alive_flag) {
 
-        std::cout << "your location " << room[player.location].name << "\n";
-        std::cin >> cmd;
-
-        if (cmd == "go") {
-
-            bool answer_is_correct = false;
-            string loc_to_go;
-            int sz = room[player.location].portal.size();
-
-
-            while (!answer_is_correct)
-            {
-                
-                for (int i = 0; i < sz; i++) {
-                    if (room[player.location].portal[i].visiblity_flag) {
-                        cout << "type Location name to go " << room[player.location].portal[i].name << "\t" << (room[player.location].portal[i].activiti_flag ? "unlocked\n" : "locked\n");
-                        exit;
-                    }
-;               }
-
-                cout << "else type Exit " << "\n";
-                std::cin >> loc_to_go;
-                if (loc_to_go == "Exit") {
-
-                    answer_is_correct = true;
-                    exit;
-                }
-                else {
-
-                    for (int i = 0; i < sz; i++) {
-                        if (room[player.location].portal[i].name == loc_to_go) {
-                            player.location = room[player.location].portal[i].target;
-                            answer_is_correct = true;
-
-                            break;
-                        }
-
-                    }
-                }
-            }
-
-                
-        }
-        if (cmd == "use") {
-
-
-
-            string item_to_use;
-            cin >> item_to_use;
-
-            for (int i = 0; i < player.items.size(); i++) {
-                if (item_name[(int)player.items[i]] == item_to_use) {
-
-                    if (item_to_use == "tth") {
-
-                                room[player.location].portal[0].activiti_flag = true;
-                                cout << " You have access to: " << room[player.location].portal[0].name << "\n";
-                            
-                    }
-
-
-                    if (item_to_use == "ar_glasses") {
-
-                        int sz = room[player.location].portal.size(); // исправить сз, не то берет для расчета полюбому!
-                        for (int i = 0; i < sz; i++) {
-                            if (!room[player.location].portal[i].visiblity_flag){ 
-                                room[player.location].portal[i].visiblity_flag = true;
-                                cout << " Looks like appears new door(s)" << "\n";
-                            }
-                        }
-                    }
-
-                    if (item_to_use == "jacket") {
-                        player.health += 100;
-                       cout << "Your health has been increased." << "\n";
-                    }
-
-                    if (item_to_use == "gun") {
-                        //cout << enemy.damage << "\n";
-                        
-                                attack_enemy();
-                        
-                    }
-                }
-
-            }
-        }
-
-       if (cmd == "list") {
-           if (room[player.location].items.empty()) {
-               cout << "There are no items here.\n";
-           }
-           else {
-               for (int i = 0; i < room[player.location].items.size(); i++) {
-    
-                   cout << item_name[(int)room[player.location].items[i]] << "\n";
-               }
-           }
-       }
-    
-       if (cmd == "invent") {
-    
-           if (player.items.empty()) {
-               cout << "There are no items here.\n";
-           }
-           else {
-               for (int i = 0; i < player.items.size(); i++) {
-                   cout << item_name[(int)player.items[i]] << "\n";
-               }
-           }
-       }
-       if (cmd == "drop") {
-           if (player.items.empty()) {
-               cout << "There are no items to pick up here.\n";
-           }
-           else {
-               for (int i = 0; i < player.items.size(); i++) {
-                   cout << item_name[(int)player.items[i]] << "\n";
-               }
-           }
-
-           string item_to_drop;
-           cin >> item_to_drop;
-
-           for (int i = 0; i < player.items.size(); i++) {
-               if (item_name[(int)player.items[i]] == item_to_drop) {
-                   room[player.location].items.push_back(player.items[i]);
-                   cout << "You drop out " << item_name[(int)player.items[i]] << "\n";
-                   player.items.erase(player.items.begin() + i);
-               }
-           }
-       }
-
-        if (cmd == "pick") {
-            if (room[player.location].items.empty()) {
-                cout << "There are no items to pick up here.\n";
-            }
-            else {
-                for (int i = 0; i < room[player.location].items.size(); i++) {
-                    cout << item_name[(int)room[player.location].items[i]] << "\n";
-                }
-            }
-            string item_to_pick;
-            cin >> item_to_pick;
-   
-            for (int i = 0; i < room[player.location].items.size(); i++) {
-                if (item_name[(int)room[player.location].items[i]] == item_to_pick) {
-                    player.items.push_back(room[player.location].items[i]);
-                    cout << "You picked up " << item_name[(int)room[player.location].items[i]] << "\n";
-                    room[player.location].items.erase(room[player.location].items.begin() + i);
-                }
-            }
-   
-   
-        }
+        MainGame(cmd);
         if (cmd == "exit") {
             break;
         }
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
