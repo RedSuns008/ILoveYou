@@ -130,6 +130,8 @@ int main() {
     //room[3].enemy.push_back({ "Cyberpsycho", false });
 
     player.location = 1;
+    player.items.push_back(item::ar_glasses);
+    player.items.push_back(item::gun);
 
     string cmd;
     while (player.alive_flag) {
@@ -149,7 +151,7 @@ int main() {
                 
                 for (int i = 0; i < sz; i++) {
                     if (room[player.location].portal[i].visiblity_flag) {
-                        cout << "type Location name to go"  << room[player.location].portal[i].name << "\t" << (room[player.location].portal[i].activiti_flag ? "unlocked\n" : "locked\n");
+                        cout << "type Location name to go " << room[player.location].portal[i].name << "\t" << (room[player.location].portal[i].activiti_flag ? "unlocked\n" : "locked\n");
                         exit;
                     }
 ;               }
@@ -198,10 +200,11 @@ int main() {
                     if (item_to_use == "ar_glasses") {
 
                         int sz = room[player.location].portal.size(); // исправить сз, не то берет для расчета полюбому!
-
                         for (int i = 0; i < sz; i++) {
-                            room[player.location].portal[i].visiblity_flag = true;
-                            cout << " Looks like appears new door(s)" << "\n";
+                            if (!room[player.location].portal[i].visiblity_flag){ 
+                                room[player.location].portal[i].visiblity_flag = true;
+                                cout << " Looks like appears new door(s)" << "\n";
+                            }
                         }
                     }
 
